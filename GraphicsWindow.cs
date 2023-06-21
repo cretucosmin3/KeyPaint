@@ -6,7 +6,7 @@ using Silk.NET.Windowing;
 using Silk.NET.Windowing.Glfw;
 using SkiaSharp;
 
-namespace Graphics;
+namespace KeyPaint;
 
 public class GraphicsWindow
 {
@@ -22,7 +22,7 @@ public class GraphicsWindow
 
     private IWindow window;
     private IInputContext _Input;
-    private readonly string WindowTitle = "Graphics";
+    private readonly string WindowTitle = "KeyPaint";
     private readonly int windowWidth;
     private readonly int windowHeight;
 

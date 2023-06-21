@@ -7,7 +7,7 @@
             "type": "process",
             "args": [
                 "build",
-                "${workspaceFolder}/Graphics.csproj",
+                "${workspaceFolder}/KeyPaint.csproj",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
@@ -19,7 +19,7 @@
             "type": "process",
             "args": [
                 "publish",
-                "${workspaceFolder}/Graphics.csproj",
+                "${workspaceFolder}/KeyPaint.csproj",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
@@ -33,7 +33,7 @@
                 "watch",
                 "run",
                 "--project",
-                "${workspaceFolder}/Graphics.csproj"
+                "${workspaceFolder}/KeyPaint.csproj"
             ],
             "problemMatcher": "$msCompile"
         }

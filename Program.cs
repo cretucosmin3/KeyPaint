@@ -5,7 +5,7 @@ using System.Text;
 using NativeFileDialogSharp;
 using SkiaSharp;
 
-namespace Graphics;
+namespace KeyPaint;
 
 static class Program
 {
@@ -39,8 +39,8 @@ static class Program
         Style = SKPaintStyle.Fill,
     };
 
-    static float WindowWidth = 1250;
-    static float WindowHeight = 1000;
+    static readonly float WindowWidth = 900;
+    static readonly float WindowHeight = 750;
 
     static SKRect FocusArea = new(0, 0, WindowWidth, WindowHeight);
     static SKRect SelectedFocusArea = new(0, 0, WindowWidth, WindowHeight);
@@ -65,7 +65,7 @@ static class Program
 
     static void Main()
     {
-        Window = new GraphicsWindow("Keyboard Artist", (int)WindowWidth, (int)WindowHeight);
+        Window = new GraphicsWindow("KeyPaint", (int)WindowWidth, (int)WindowHeight);
         Window.OnFrame += OnFrame;
         Window.OnLoaded += OnWindowLoaded;
         Window.RenderWaitTicks = 5;
