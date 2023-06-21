@@ -10,10 +10,10 @@ KeyPaint is a desktop drawing application enabling anyone to draw using only a k
 **Can do**: filled paths, outline, rounded corners, 4 shades of gray + black, line width, line fuzzyness.
 **Can't do**: Fine splines, gradients.
 
-![alt text](./github/sample.png)
+![Sample drawings](./github/sample.png)
 <br>
 
 ***
 
-## Control
-![alt text](./github/controls.png)
+## Controls guide
+![Controls](./github/controls.png)
