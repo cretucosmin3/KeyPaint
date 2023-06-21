@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net6.0</TargetFramework>
+    <RootNamespace>Graphics</RootNamespace>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'"/>
+  <ItemGroup>
+    <PackageReference Include="Silk.NET" Version="2.15.0"/>
+    <PackageReference Include="Silk.NET.Core" Version="2.15.0"/>
+    <PackageReference Include="Silk.NET.Windowing.Common" Version="2.15.0"/>
+    <PackageReference Include="Silk.NET.Windowing.Glfw" Version="2.15.0"/>
+    <PackageReference Include="SkiaSharp" Version="2.88.3"/>
+    <PackageReference Include="SkiaSharp.NativeAssets.Linux.NoDependencies" Version="2.88.3"/>
+    <PackageReference Include="SixLabors.ImageSharp" Version="2.1.2"/>
+    <PackageReference Include="NativeFileDialogSharp" Version="*"/>
+  </ItemGroup>
+</Project>
