@@ -7,6 +7,13 @@
 KeyPaint is a desktop drawing application enabling anyone to draw using only a keyboard.<br>
 
 ## What can you draw?
-Pretty much anything you can imagine, KeyPaint allows paths filled or not, rounded corners, 4 shades of gray + black, line width, line fuzzyness.
+**Can do**: filled paths, outline, rounded corners, 4 shades of gray + black, line width, line fuzzyness.
+**Can't do**: Fine splines, gradients.
 
 <img align="left" height="350" src="./github/sample.png">
+<br>
+
+***
+
+## Controls
+<img align="left" width="500" src="./github/controls.png">
