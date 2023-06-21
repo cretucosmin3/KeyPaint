@@ -8,12 +8,12 @@ KeyPaint is a desktop drawing application enabling anyone to draw using only a k
 
 ## What can you draw?
 **Can do**: filled paths, outline, rounded corners, 4 shades of gray + black, line width, line fuzzyness.
+
 **Can't do**: Fine splines, gradients.
 
-![Sample drawings](./github/sample.png)
-<br>
+<img height="280" src="./github/sample.png">
 
 ***
 
 ## Controls guide
-![Controls](./github/controls.png)
+<img width="400" src="./github/controls.png">
