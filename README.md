@@ -11,9 +11,9 @@ KeyPaint is a desktop drawing application enabling anyone to draw using only a k
 
 **Can't do**: Fine splines, gradients.
 
-<img height="280" src="./github/sample.png">
+<img width="80%" src="./github/sample.png">
 
 ***
 
 ## Controls guide
-<img width="400" src="./github/controls.png">
+<img width="80%" src="./github/controls.png">
