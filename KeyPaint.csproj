@@ -1,19 +1,29 @@
 <Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <OutputType>Exe</OutputType>
-    <TargetFramework>net6.0</TargetFramework>
-    <RootNamespace>KeyPaint</RootNamespace>
-    <Nullable>enable</Nullable>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'"/>
-  <ItemGroup>
-    <PackageReference Include="Silk.NET" Version="2.15.0"/>
-    <PackageReference Include="Silk.NET.Core" Version="2.15.0"/>
-    <PackageReference Include="Silk.NET.Windowing.Common" Version="2.15.0"/>
-    <PackageReference Include="Silk.NET.Windowing.Glfw" Version="2.15.0"/>
-    <PackageReference Include="SkiaSharp" Version="2.88.3"/>
-    <PackageReference Include="SkiaSharp.NativeAssets.Linux.NoDependencies" Version="2.88.3"/>
-    <PackageReference Include="SixLabors.ImageSharp" Version="2.1.2"/>
-    <PackageReference Include="NativeFileDialogSharp" Version="*"/>
-  </ItemGroup>
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net6.0</TargetFramework>
+        <ApplicationIcon>assets/icon64.ico</ApplicationIcon>
+        <RootNamespace>KeyPaint</RootNamespace>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <Target Name="CopyAssets" AfterTargets="AfterBuild">
+        <ItemGroup>
+            <_AssetFiles Include="$(MSBuildProjectDirectory)\assets\**" />
+        </ItemGroup>
+        <Copy SourceFiles="@(_AssetFiles)" DestinationFolder="$(OutDir)assets\%(RecursiveDir)" />
+    </Target>
+
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'" />
+    <ItemGroup>
+        <PackageReference Include="Silk.NET" Version="2.15.0" />
+        <PackageReference Include="Silk.NET.Core" Version="2.15.0" />
+        <PackageReference Include="Silk.NET.Windowing.Common" Version="2.15.0" />
+        <PackageReference Include="Silk.NET.Windowing.Glfw" Version="2.15.0" />
+        <PackageReference Include="SkiaSharp" Version="2.88.3" />
+        <PackageReference Include="SkiaSharp.NativeAssets.Linux.NoDependencies" Version="2.88.3" />
+        <PackageReference Include="SixLabors.ImageSharp" Version="2.1.2" />
+        <PackageReference Include="NativeFileDialogSharp" Version="*" />
+    </ItemGroup>
 </Project>
