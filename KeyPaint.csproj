@@ -6,8 +6,31 @@
         <RootNamespace>KeyPaint</RootNamespace>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <Nullable>enable</Nullable>
+
+        <!-- Platform definitions -->
+        <IsWindows
+            Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Windows)))' == 'true'">
+            true</IsWindows>
+        <IsOSX
+            Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::OSX)))' == 'true'">
+            true</IsOSX>
+        <IsLinux
+            Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Linux)))' == 'true'">
+            true</IsLinux>
     </PropertyGroup>
 
+    <!-- Platform constants -->
+    <PropertyGroup Condition="'$(IsWindows)'=='true'">
+        <DefineConstants>$(DefineConstants);Windows</DefineConstants>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(IsOSX)'=='true'">
+        <DefineConstants>$(DefineConstants);OSX</DefineConstants>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(IsLinux)'=='true'">
+        <DefineConstants>$(DefineConstants);Linux</DefineConstants>
+    </PropertyGroup>
+
+    <!-- Adding assets to bin folder -->
     <Target Name="CopyAssets" AfterTargets="AfterBuild">
         <ItemGroup>
             <_AssetFiles Include="$(MSBuildProjectDirectory)\assets\**" />
