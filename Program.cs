@@ -282,8 +282,7 @@ static class Program
         float f = increasing ? 5 : -5;
         Roundness = Math.Clamp(Roundness + f, 0, 200);
 
-        if (Roundness > 0)
-            RoundEffect = SKPathEffect.CreateCorner(Roundness);
+        RoundEffect = SKPathEffect.CreateCorner(Roundness);
 
         ComposePathEffects();
     }
@@ -296,38 +295,30 @@ static class Program
         float f = increasing ? 0.5f : -0.5f;
         Fuzzyness = Math.Clamp(Fuzzyness + f, 0, 10);
 
-        if (Fuzzyness > 0)
-            FuzzyEffect = SKPathEffect.CreateDiscrete(Fuzzyness * 1.5f, Fuzzyness);
+        FuzzyEffect = SKPathEffect.CreateDiscrete(Fuzzyness * 1.5f, Fuzzyness);
 
         ComposePathEffects();
     }
 
     static void ComposePathEffects()
     {
-        bool isRound = Roundness > 0;
-        bool isFuzzy = Fuzzyness > 0;
+        bool isRound = RoundEffect != null;
+        bool isFuzzy = FuzzyEffect != null;
+
+        DrawPaint.PathEffect = null;
 
         if (isRound && isFuzzy) // Round and fuzzy
         {
             DrawPaint.PathEffect = SKPathEffect.CreateCompose(FuzzyEffect, RoundEffect);
-            return;
         }
         else if (isRound && !isFuzzy) // Round but NOT fuzzy
         {
-            FuzzyEffect?.Dispose();
             DrawPaint.PathEffect = RoundEffect;
-            return;
         }
         else if (isFuzzy && !isRound) // Fuzzy but NOT round
         {
-            RoundEffect?.Dispose();
             DrawPaint.PathEffect = FuzzyEffect;
-            return;
         }
-
-        RoundEffect?.Dispose();
-        FuzzyEffect?.Dispose();
-        DrawPaint.PathEffect?.Dispose();
     }
 
     static void CalculateFocusedArea()
