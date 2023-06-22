@@ -1,9 +1,14 @@
+using System.IO;
 using System;
+using System.Runtime.InteropServices;
 using System.Threading;
 using Silk.NET.Input;
 using Silk.NET.Maths;
 using Silk.NET.Windowing;
 using Silk.NET.Windowing.Glfw;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Advanced;
+using SixLabors.ImageSharp.PixelFormats;
 using SkiaSharp;
 
 namespace KeyPaint;
@@ -69,6 +74,31 @@ public class GraphicsWindow
         window.Center();
         SetCanvas(window);
         OnLoaded?.Invoke();
+
+        LoadLogo();
+    }
+
+    private void LoadLogo()
+    {
+        if (!File.Exists("assets/icon128.png")) return;
+
+        unsafe
+        {
+            using var image = Image.Load<Rgba32>("assets/icon128.png");
+            var memoryGroup = image.GetPixelMemoryGroup();
+            Memory<byte> array = new byte[memoryGroup.TotalLength * sizeof(Rgba32)];
+            var block = MemoryMarshal.Cast<byte, Rgba32>(array.Span);
+
+            foreach (var memory in memoryGroup)
+            {
+                memory.Span.CopyTo(block);
+                block = block[memory.Length..];
+            }
+
+            var icon = new Silk.NET.Core.RawImage(image.Width, image.Height, array);
+            window.SetWindowIcon(ref icon);
+            Console.WriteLine("Logo loaded");
+        }
     }
 
     private void Render(double time)

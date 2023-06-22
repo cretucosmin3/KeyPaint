@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Text;
 using NativeFileDialogSharp;
 using SkiaSharp;
@@ -9,6 +10,9 @@ namespace KeyPaint;
 
 static class Program
 {
+    [DllImport("kernel32.dll", SetLastError = true)]
+    public static extern int FreeConsole();
+
     private static GraphicsWindow Window = default!;
 
     private static readonly SKPaint DrawPaint = new()
@@ -39,8 +43,8 @@ static class Program
         Style = SKPaintStyle.Fill,
     };
 
-    static readonly float WindowWidth = 900;
-    static readonly float WindowHeight = 750;
+    static readonly float WindowWidth = 1100;
+    static readonly float WindowHeight = 800;
 
     static SKRect FocusArea = new(0, 0, WindowWidth, WindowHeight);
     static SKRect SelectedFocusArea = new(0, 0, WindowWidth, WindowHeight);
@@ -65,6 +69,7 @@ static class Program
 
     static void Main()
     {
+        DetachConsoleWindow();
         Window = new GraphicsWindow("KeyPaint", (int)WindowWidth, (int)WindowHeight);
         Window.OnFrame += OnFrame;
         Window.OnLoaded += OnWindowLoaded;
@@ -262,6 +267,11 @@ static class Program
                 }
             };
         }
+    }
+
+    static void DetachConsoleWindow()
+    {
+        _ = FreeConsole();
     }
 
     static void CalculateRoundness(bool increasing)
