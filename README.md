@@ -24,7 +24,7 @@ KeyPaint is a desktop drawing application enabling anyone to draw using only a k
 
 ## Important mentions
 
-**Huge thanks for these incredible people maintaining the libraries that made this possible:**
+**Huge thanks to these incredible people maintaining the libraries that made this possible:**
 
 [Silk.NET](https://github.com/dotnet/Silk.NET) - high-speed .NET multimedia, graphics, and compute; providing bindings to popular low-level APIs such as OpenGL, OpenCL, OpenAL, OpenXR, GLFW, SDL, Vulkan, Assimp, WebGPU, and DirectX.
 
