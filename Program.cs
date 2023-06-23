@@ -36,6 +36,14 @@ namespace KeyPaint
             Style = SKPaintStyle.Stroke,
         };
 
+        private static readonly SKPaint CrossPointPaint = new()
+        {
+            Color = SKColors.Black.WithAlpha(60),
+            StrokeWidth = 2,
+            Style = SKPaintStyle.Stroke,
+            PathEffect = SKPathEffect.CreateDash(new float[] { 4, 8 }, 0)
+        };
+
         private static readonly SKPaint SelectedFocusAreaPaint = new()
         {
             Color = SKColors.Red.WithAlpha(25),
@@ -127,9 +135,6 @@ namespace KeyPaint
                         case Silk.NET.Input.Key.F:
                             DrawPaint.Style = DrawPaint.Style == SKPaintStyle.Stroke ? SKPaintStyle.Fill : SKPaintStyle.Stroke;
                             break;
-                        case Silk.NET.Input.Key.C:
-                            IsPlacingPoint = true;
-                            break;
                         case Silk.NET.Input.Key.Left:
                             if (SelectingRoundnessAndFuzzyness)
                             {
@@ -137,6 +142,13 @@ namespace KeyPaint
                                 break;
                             }
 
+                            if (IsSelectingThinkness)
+                            {
+                                DrawPaint.StrokeWidth = Math.Clamp(DrawPaint.StrokeWidth - 1, 0.5f, 20);
+                                break;
+                            }
+
+                            IsPlacingPoint = true;
                             if (!IsPlacingPoint) break;
 
                             HasAreaFocused = true;
@@ -151,6 +163,13 @@ namespace KeyPaint
                                 break;
                             }
 
+                            if (IsSelectingThinkness)
+                            {
+                                DrawPaint.StrokeWidth = Math.Clamp(DrawPaint.StrokeWidth + 1, 0.5f, 20);
+                                break;
+                            }
+
+                            IsPlacingPoint = true;
                             if (!IsPlacingPoint) break;
 
                             HasAreaFocused = true;
@@ -165,6 +184,7 @@ namespace KeyPaint
                                 break;
                             }
 
+                            IsPlacingPoint = true;
                             if (!IsPlacingPoint) break;
 
                             HasAreaFocused = true;
@@ -179,6 +199,7 @@ namespace KeyPaint
                                 break;
                             }
 
+                            IsPlacingPoint = true;
                             if (!IsPlacingPoint) break;
 
                             HasAreaFocused = true;
@@ -210,15 +231,26 @@ namespace KeyPaint
                             IsPlacingPoint = false;
                             HasAreaFocused = false;
 
+                            ResetFocusArea();
                             RedoCurrentPath();
                             break;
                         case Silk.NET.Input.Key.Z:
+                            if (IsPlacingPoint)
+                            {
+                                IsPlacingPoint = false;
+                                HasAreaFocused = false;
+                                ResetFocusArea();
+                                RedoCurrentPath();
+                                break;
+                            }
+
                             if (DrawPathPoints.Count > 0)
                             {
                                 DrawPathPoints.RemoveAt(DrawPathPoints.Count - 1);
                                 IsPlacingPoint = false;
                                 HasAreaFocused = false;
                             }
+
                             if (DrawPathPoints.Count > 0)
                             {
                                 SelectedFocusPoint.X = DrawPathPoints[^1].X;
@@ -228,24 +260,12 @@ namespace KeyPaint
                             RedoCurrentPath();
                             break;
                         case Silk.NET.Input.Key.Left:
-                            if (IsSelectingThinkness)
-                            {
-                                DrawPaint.StrokeWidth = Math.Clamp(DrawPaint.StrokeWidth - 1, 0.5f, 20);
-                                break;
-                            }
-
                             if (!IsPlacingPoint) break;
 
                             if (FocusedDirection == Silk.NET.Input.Key.Left)
                                 CalculateSelection();
                             break;
                         case Silk.NET.Input.Key.Right:
-                            if (IsSelectingThinkness)
-                            {
-                                DrawPaint.StrokeWidth = Math.Clamp(DrawPaint.StrokeWidth + 1, 0.5f, 20);
-                                break;
-                            }
-
                             if (!IsPlacingPoint) break;
 
                             if (FocusedDirection == Silk.NET.Input.Key.Right)
@@ -369,6 +389,15 @@ namespace KeyPaint
             RedoCurrentPath();
         }
 
+        static void ResetFocusArea()
+        {
+            // Reset area
+            FocusArea.Left = 0;
+            FocusArea.Top = 0;
+            FocusArea.Right = WindowWidth;
+            FocusArea.Bottom = WindowHeight;
+        }
+
         static void PlaceDrawPoint()
         {
             DrawPathPoints.Add(new(
@@ -377,12 +406,7 @@ namespace KeyPaint
             ));
 
             RedoCurrentPath();
-
-            // Reset area
-            FocusArea.Left = 0;
-            FocusArea.Top = 0;
-            FocusArea.Right = WindowWidth;
-            FocusArea.Bottom = WindowHeight;
+            ResetFocusArea();
         }
 
         static void RedoCurrentPath()
@@ -466,7 +490,14 @@ namespace KeyPaint
                     SelectedFocusPoint.X = SelectedFocusArea.MidX;
                     SelectedFocusPoint.Y = SelectedFocusArea.MidY;
                     FocusPointPaint.StrokeWidth = Math.Clamp(DrawPaint.StrokeWidth + 3, 6, 100);
+
                     canvas.DrawPoint(SelectedFocusPoint, FocusPointPaint);
+
+                    // Draw horizontal line of the cross
+                    canvas.DrawLine(0, SelectedFocusPoint.Y, WindowWidth, SelectedFocusPoint.Y, CrossPointPaint);
+
+                    // Draw vertical line of the cross
+                    canvas.DrawLine(SelectedFocusPoint.X, 0, SelectedFocusPoint.X, WindowHeight, CrossPointPaint);
                 }
             }
         }
