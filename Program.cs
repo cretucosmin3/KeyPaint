@@ -499,11 +499,15 @@ namespace KeyPaint
 
             if (ShowToRight)
             {
-                UIPanelArea.Offset(WindowWidth - 71, 0);
-                UILineExample.Offset(WindowWidth - 71, 0);
+                UIPanelArea.Offset(WindowWidth - 72, 0);
+                UILineExample.Offset(WindowWidth - 72, 0);
             }
 
             canvas.DrawRoundRect(UIPanelArea, PaintsLibrary.UIPanel);
+
+            PaintsLibrary.UIPanelOutline.Color = DrawPathPoints.Count > 0 ? SKColors.Black : SKColors.LightGray;
+            PaintsLibrary.UIPanelOutline.StrokeWidth = DrawPathPoints.Count > 0 ? 2 : 3;
+
             canvas.DrawRoundRect(UIPanelArea, PaintsLibrary.UIPanelOutline);
 
             canvas.DrawPath(UILineExample, PaintsLibrary.DrawPaint);
@@ -512,8 +516,8 @@ namespace KeyPaint
 
             if (ShowToRight)
             {
-                UIPanelArea.Offset(0 - (WindowWidth - 71), 0);
-                UILineExample.Offset(0 - (WindowWidth - 71), 0);
+                UIPanelArea.Offset(0 - (WindowWidth - 72), 0);
+                UILineExample.Offset(0 - (WindowWidth - 72), 0);
             }
         }
     }
