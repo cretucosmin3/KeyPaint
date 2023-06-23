@@ -14,48 +14,19 @@ namespace KeyPaint
         public static extern int FreeConsole();
 
         private static GraphicsWindow Window = default!;
-        private static readonly SKPaint DrawPaint = new()
-        {
-            Color = SKColors.Black,
-            StrokeWidth = 2,
-            Style = SKPaintStyle.Stroke,
-            IsAntialias = true,
-        };
-
-        private static readonly SKPaint FocusAreaPaint = new()
-        {
-            Color = SKColors.Red.WithAlpha(175),
-            StrokeWidth = 3,
-            Style = SKPaintStyle.Stroke,
-        };
-
-        private static readonly SKPaint FocusPointPaint = new()
-        {
-            Color = SKColors.IndianRed,
-            StrokeWidth = 6,
-            Style = SKPaintStyle.Stroke,
-        };
-
-        private static readonly SKPaint CrossPointPaint = new()
-        {
-            Color = SKColors.Black.WithAlpha(60),
-            StrokeWidth = 2,
-            Style = SKPaintStyle.Stroke,
-            PathEffect = SKPathEffect.CreateDash(new float[] { 4, 8 }, 0)
-        };
-
-        private static readonly SKPaint SelectedFocusAreaPaint = new()
-        {
-            Color = SKColors.Red.WithAlpha(25),
-            Style = SKPaintStyle.Fill,
-        };
 
         const float WindowWidth = 1100;
         const float WindowHeight = 800;
 
+        // Drawing
         static SKRect FocusArea = new(0, 0, WindowWidth, WindowHeight);
         static SKRect SelectedFocusArea = new(0, 0, WindowWidth, WindowHeight);
         static SKPoint SelectedFocusPoint = new(0, 0);
+
+        // UI
+        static readonly SKRoundRect UIPanelArea = new(new(6, 6, 66, 66), 10);
+        static readonly SKPath UILineExample = new();
+        static bool DisplayPreview = true;
 
         static readonly List<SKPoint> DrawPathPoints = new();
         static readonly SKPath CurrentPath = new();
@@ -77,12 +48,22 @@ namespace KeyPaint
         static void Main()
         {
             DetachConsoleWindow();
+            LoadUserInterfaceVariables();
+
             Window = new GraphicsWindow("KeyPaint", (int)WindowWidth, (int)WindowHeight);
             Window.OnFrame += OnFrame;
             Window.OnLoaded += OnWindowLoaded;
             Window.RenderWaitTicks = 5;
 
             Window.Start();
+        }
+
+        static void LoadUserInterfaceVariables()
+        {
+            UILineExample.MoveTo(18, 52);
+            UILineExample.LineTo(52, 20);
+            UILineExample.LineTo(52, 52);
+            UILineExample.LineTo(18, 20);
         }
 
         static void OnWindowLoaded()
@@ -98,19 +79,22 @@ namespace KeyPaint
                     switch (key)
                     {
                         case Silk.NET.Input.Key.Number1:
-                            DrawPaint.Color = new(235, 235, 235);
+                            PaintsLibrary.DrawPaint.Color = new(235, 235, 235);
                             break;
                         case Silk.NET.Input.Key.Number2:
-                            DrawPaint.Color = new(175, 175, 175);
+                            PaintsLibrary.DrawPaint.Color = new(175, 175, 175);
                             break;
                         case Silk.NET.Input.Key.Number3:
-                            DrawPaint.Color = new(110, 110, 110);
+                            PaintsLibrary.DrawPaint.Color = new(110, 110, 110);
                             break;
                         case Silk.NET.Input.Key.Number4:
-                            DrawPaint.Color = new(50, 50, 50);
+                            PaintsLibrary.DrawPaint.Color = new(50, 50, 50);
                             break;
                         case Silk.NET.Input.Key.Number5:
-                            DrawPaint.Color = new(15, 15, 15);
+                            PaintsLibrary.DrawPaint.Color = new(15, 15, 15);
+                            break;
+                        case Silk.NET.Input.Key.Tab:
+                            DisplayPreview = !DisplayPreview;
                             break;
                         case Silk.NET.Input.Key.Space:
                             if (IsPlacingPoint) return;
@@ -133,7 +117,7 @@ namespace KeyPaint
                             SelectingRoundnessAndFuzzyness = true;
                             break;
                         case Silk.NET.Input.Key.F:
-                            DrawPaint.Style = DrawPaint.Style == SKPaintStyle.Stroke ? SKPaintStyle.Fill : SKPaintStyle.Stroke;
+                            PaintsLibrary.DrawPaint.Style = PaintsLibrary.DrawPaint.Style == SKPaintStyle.Stroke ? SKPaintStyle.Fill : SKPaintStyle.Stroke;
                             break;
                         case Silk.NET.Input.Key.Left:
                             if (SelectingRoundnessAndFuzzyness)
@@ -144,7 +128,7 @@ namespace KeyPaint
 
                             if (IsSelectingThinkness)
                             {
-                                DrawPaint.StrokeWidth = Math.Clamp(DrawPaint.StrokeWidth - 1, 0.5f, 20);
+                                PaintsLibrary.DrawPaint.StrokeWidth = Math.Clamp(PaintsLibrary.DrawPaint.StrokeWidth - 1, 0.5f, 20);
                                 break;
                             }
 
@@ -165,7 +149,7 @@ namespace KeyPaint
 
                             if (IsSelectingThinkness)
                             {
-                                DrawPaint.StrokeWidth = Math.Clamp(DrawPaint.StrokeWidth + 1, 0.5f, 20);
+                                PaintsLibrary.DrawPaint.StrokeWidth = Math.Clamp(PaintsLibrary.DrawPaint.StrokeWidth + 1, 0.5f, 20);
                                 break;
                             }
 
@@ -329,19 +313,19 @@ namespace KeyPaint
             bool isRound = RoundEffect != null;
             bool isFuzzy = FuzzyEffect != null;
 
-            DrawPaint.PathEffect = null;
+            PaintsLibrary.DrawPaint.PathEffect = null;
 
             if (isRound && isFuzzy) // Round and fuzzy
             {
-                DrawPaint.PathEffect = SKPathEffect.CreateCompose(FuzzyEffect, RoundEffect);
+                PaintsLibrary.DrawPaint.PathEffect = SKPathEffect.CreateCompose(FuzzyEffect, RoundEffect);
             }
             else if (isRound && !isFuzzy) // Round but NOT fuzzy
             {
-                DrawPaint.PathEffect = RoundEffect;
+                PaintsLibrary.DrawPaint.PathEffect = RoundEffect;
             }
             else if (isFuzzy && !isRound) // Fuzzy but NOT round
             {
-                DrawPaint.PathEffect = FuzzyEffect;
+                PaintsLibrary.DrawPaint.PathEffect = FuzzyEffect;
             }
         }
 
@@ -438,7 +422,7 @@ namespace KeyPaint
         {
             if (DrawPathPoints.Count > 1)
             {
-                BitmapCanvas.DrawPath(CurrentPath, DrawPaint);
+                BitmapCanvas.DrawPath(CurrentPath, PaintsLibrary.DrawPaint);
             }
 
             CurrentPath.Rewind();
@@ -471,34 +455,65 @@ namespace KeyPaint
 
             if (DrawPathPoints.Count == 1)
             {
-                canvas.DrawPoint(DrawPathPoints[0], DrawPaint);
+                canvas.DrawPoint(DrawPathPoints[0], PaintsLibrary.DrawPaint);
             }
 
             if (DrawPathPoints.Count > 0)
             {
-                canvas.DrawPath(CurrentPath, DrawPaint);
+                canvas.DrawPath(CurrentPath, PaintsLibrary.DrawPaint);
             }
 
             if (IsPlacingPoint)
             {
-                canvas.DrawRect(FocusArea, FocusAreaPaint);
+                canvas.DrawRect(FocusArea, PaintsLibrary.FocusAreaPaint);
 
                 if (HasAreaFocused)
                 {
-                    canvas.DrawRect(SelectedFocusArea, SelectedFocusAreaPaint);
+                    canvas.DrawRect(SelectedFocusArea, PaintsLibrary.SelectedFocusAreaPaint);
 
                     SelectedFocusPoint.X = SelectedFocusArea.MidX;
                     SelectedFocusPoint.Y = SelectedFocusArea.MidY;
-                    FocusPointPaint.StrokeWidth = Math.Clamp(DrawPaint.StrokeWidth + 3, 6, 100);
+                    PaintsLibrary.FocusPointPaint.StrokeWidth = Math.Clamp(PaintsLibrary.DrawPaint.StrokeWidth + 3, 6, 100);
 
-                    canvas.DrawPoint(SelectedFocusPoint, FocusPointPaint);
+                    canvas.DrawPoint(SelectedFocusPoint, PaintsLibrary.FocusPointPaint);
 
                     // Draw horizontal line of the cross
-                    canvas.DrawLine(0, SelectedFocusPoint.Y, WindowWidth, SelectedFocusPoint.Y, CrossPointPaint);
+                    canvas.DrawLine(0, SelectedFocusPoint.Y, WindowWidth, SelectedFocusPoint.Y, PaintsLibrary.CrossPointPaint);
 
                     // Draw vertical line of the cross
-                    canvas.DrawLine(SelectedFocusPoint.X, 0, SelectedFocusPoint.X, WindowHeight, CrossPointPaint);
+                    canvas.DrawLine(SelectedFocusPoint.X, 0, SelectedFocusPoint.X, WindowHeight, PaintsLibrary.CrossPointPaint);
                 }
+            }
+
+            if (DisplayPreview)
+                DrawUserInterface(canvas);
+        }
+
+        static void DrawUserInterface(SKCanvas canvas)
+        {
+            bool DrawingPointTooClose = SelectedFocusPoint.X < 150 && SelectedFocusPoint.Y < 150;
+            bool ShowToRight = IsPlacingPoint && DrawingPointTooClose;
+
+            var previousColor = PaintsLibrary.DrawPaint.Color;
+            PaintsLibrary.DrawPaint.Color = SKColors.Black;
+
+            if (ShowToRight)
+            {
+                UIPanelArea.Offset(WindowWidth - 71, 0);
+                UILineExample.Offset(WindowWidth - 71, 0);
+            }
+
+            canvas.DrawRoundRect(UIPanelArea, PaintsLibrary.UIPanel);
+            canvas.DrawRoundRect(UIPanelArea, PaintsLibrary.UIPanelOutline);
+
+            canvas.DrawPath(UILineExample, PaintsLibrary.DrawPaint);
+
+            PaintsLibrary.DrawPaint.Color = previousColor;
+
+            if (ShowToRight)
+            {
+                UIPanelArea.Offset(0 - (WindowWidth - 71), 0);
+                UILineExample.Offset(0 - (WindowWidth - 71), 0);
             }
         }
     }
