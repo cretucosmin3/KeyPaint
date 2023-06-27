@@ -123,7 +123,8 @@ namespace KeyPaint
                         case Silk.NET.Input.Key.Left:
                             if (IsPlacingPoint && keyboard.IsKeyPressed(Silk.NET.Input.Key.V))
                             {
-                                ShiftFocusArea(Silk.NET.Input.Key.Left);
+                                bool ctrlPressed = keyboard.IsKeyPressed(Silk.NET.Input.Key.ControlLeft);
+                                ShiftFocusArea(Silk.NET.Input.Key.Left, ctrlPressed);
                                 RedoCurrentPath();
                                 break;
                             }
@@ -151,7 +152,8 @@ namespace KeyPaint
                         case Silk.NET.Input.Key.Right:
                             if (IsPlacingPoint && keyboard.IsKeyPressed(Silk.NET.Input.Key.V))
                             {
-                                ShiftFocusArea(Silk.NET.Input.Key.Right);
+                                bool ctrlPressed = keyboard.IsKeyPressed(Silk.NET.Input.Key.ControlLeft);
+                                ShiftFocusArea(Silk.NET.Input.Key.Right, ctrlPressed);
                                 RedoCurrentPath();
                                 break;
                             }
@@ -179,7 +181,8 @@ namespace KeyPaint
                         case Silk.NET.Input.Key.Up:
                             if (IsPlacingPoint && keyboard.IsKeyPressed(Silk.NET.Input.Key.V))
                             {
-                                ShiftFocusArea(Silk.NET.Input.Key.Up);
+                                bool ctrlPressed = keyboard.IsKeyPressed(Silk.NET.Input.Key.ControlLeft);
+                                ShiftFocusArea(Silk.NET.Input.Key.Up, ctrlPressed);
                                 RedoCurrentPath();
                                 break;
                             }
@@ -201,7 +204,8 @@ namespace KeyPaint
                         case Silk.NET.Input.Key.Down:
                             if (IsPlacingPoint && keyboard.IsKeyPressed(Silk.NET.Input.Key.V))
                             {
-                                ShiftFocusArea(Silk.NET.Input.Key.Down);
+                                bool ctrlPressed = keyboard.IsKeyPressed(Silk.NET.Input.Key.ControlLeft);
+                                ShiftFocusArea(Silk.NET.Input.Key.Down, ctrlPressed);
                                 RedoCurrentPath();
                                 break;
                             }
@@ -406,30 +410,36 @@ namespace KeyPaint
             }
         }
 
-        static void ShiftFocusArea(Silk.NET.Input.Key direction)
+        static void ShiftFocusArea(Silk.NET.Input.Key direction, bool moveByHalf = false)
         {
             float Width = SelectedFocusArea.Right - SelectedFocusArea.Left;
             float Height = SelectedFocusArea.Bottom - SelectedFocusArea.Top;
 
+            if (moveByHalf)
+            {
+                Width /= 2f;
+                Height /= 2f;
+            }
+
             switch (direction)
             {
                 case Silk.NET.Input.Key.Left:
-                    if (SelectedFocusArea.Left == 0) break;
+                    if (SelectedFocusArea.Left <= 0) break;
                     SelectedFocusArea.Left -= Width;
                     SelectedFocusArea.Right -= Width;
                     break;
                 case Silk.NET.Input.Key.Right:
-                    if (SelectedFocusArea.Left + Width == WindowWidth) break;
+                    if (SelectedFocusArea.Left + Width >= WindowWidth) break;
                     SelectedFocusArea.Left += Width;
                     SelectedFocusArea.Right += Width;
                     break;
                 case Silk.NET.Input.Key.Up:
-                    if (SelectedFocusArea.Top == 0) break;
+                    if (SelectedFocusArea.Top <= 0) break;
                     SelectedFocusArea.Top -= Height;
                     SelectedFocusArea.Bottom -= Height;
                     break;
                 case Silk.NET.Input.Key.Down:
-                    if (SelectedFocusArea.Top + Height == WindowHeight) break;
+                    if (SelectedFocusArea.Top + Height >= WindowHeight) break;
                     SelectedFocusArea.Top += Height;
                     SelectedFocusArea.Bottom += Height;
                     break;
