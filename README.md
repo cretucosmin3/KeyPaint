@@ -28,3 +28,23 @@ KeyPaint is a desktop drawing application enabling anyone to draw using only a k
 [Silk.NET](https://github.com/dotnet/Silk.NET) - high-speed .NET multimedia, graphics, and compute; providing bindings to popular low-level APIs such as OpenGL, OpenCL, OpenAL, OpenXR, GLFW, SDL, Vulkan, Assimp, WebGPU, and DirectX.
 
 [SkiaSharp](https://github.com/mono/SkiaSharp) - Cross-platform 2D graphics API for .NET platforms based on Google's Skia Graphics Library (skia.org)
+
+<br><br><br>
+
+# Licence
+## KeyPaint<br>
+A 100% keyboard drawing application.<br>
+Copyright (C) 2023 Cosmin Crețu
+
+This program is free software: you can redistribute it and/or modify<br>
+it under the terms of the GNU General Public License as published by<br>
+the Free Software Foundation, either version 3 of the License, or<br>
+(at your option) any later version.<br>
+<br>
+This program is distributed in the hope that it will be useful,<br>
+but WITHOUT ANY WARRANTY; without even the implied warranty of<br>
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the<br>
+GNU General Public License for more details.<br>
+
+You should have received a copy of the GNU General Public License<br>
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
