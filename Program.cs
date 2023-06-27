@@ -15,16 +15,17 @@ namespace KeyPaint
 
         private static GraphicsWindow Window = default!;
 
-        const float WindowWidth = 1100;
-        const float WindowHeight = 800;
+        const float WindowWidth = 1000;
+        const float WindowHeight = 700;
 
         // Drawing
         static SKRect FocusArea = new(0, 0, WindowWidth, WindowHeight);
+        static SKRect PreviousFocusArea = new(0, 0, WindowWidth, WindowHeight);
         static SKRect SelectedFocusArea = new(0, 0, WindowWidth, WindowHeight);
         static SKPoint SelectedFocusPoint = new(0, 0);
 
         // UI
-        static readonly SKRoundRect UIPanelArea = new(new(6, 6, 66, 66), 10);
+        static readonly SKRoundRect UIPanelArea = new(new(6, 6, 66, 66), 4);
         static readonly SKPath UILineExample = new();
         static bool DisplayPreview = true;
 
@@ -120,6 +121,13 @@ namespace KeyPaint
                             PaintsLibrary.DrawPaint.Style = PaintsLibrary.DrawPaint.Style == SKPaintStyle.Stroke ? SKPaintStyle.Fill : SKPaintStyle.Stroke;
                             break;
                         case Silk.NET.Input.Key.Left:
+                            if (IsPlacingPoint && keyboard.IsKeyPressed(Silk.NET.Input.Key.V))
+                            {
+                                ShiftFocusArea(Silk.NET.Input.Key.Left);
+                                RedoCurrentPath();
+                                break;
+                            }
+
                             if (SelectingRoundnessAndFuzzyness)
                             {
                                 CalculateRoundness(false);
@@ -141,6 +149,13 @@ namespace KeyPaint
                             RedoCurrentPath();
                             break;
                         case Silk.NET.Input.Key.Right:
+                            if (IsPlacingPoint && keyboard.IsKeyPressed(Silk.NET.Input.Key.V))
+                            {
+                                ShiftFocusArea(Silk.NET.Input.Key.Right);
+                                RedoCurrentPath();
+                                break;
+                            }
+
                             if (SelectingRoundnessAndFuzzyness)
                             {
                                 CalculateRoundness(true);
@@ -162,6 +177,13 @@ namespace KeyPaint
                             RedoCurrentPath();
                             break;
                         case Silk.NET.Input.Key.Up:
+                            if (IsPlacingPoint && keyboard.IsKeyPressed(Silk.NET.Input.Key.V))
+                            {
+                                ShiftFocusArea(Silk.NET.Input.Key.Up);
+                                RedoCurrentPath();
+                                break;
+                            }
+
                             if (SelectingRoundnessAndFuzzyness)
                             {
                                 CalculateFuzzyness(true);
@@ -177,6 +199,13 @@ namespace KeyPaint
                             RedoCurrentPath();
                             break;
                         case Silk.NET.Input.Key.Down:
+                            if (IsPlacingPoint && keyboard.IsKeyPressed(Silk.NET.Input.Key.V))
+                            {
+                                ShiftFocusArea(Silk.NET.Input.Key.Down);
+                                RedoCurrentPath();
+                                break;
+                            }
+
                             if (SelectingRoundnessAndFuzzyness)
                             {
                                 CalculateFuzzyness(false);
@@ -210,6 +239,25 @@ namespace KeyPaint
 
                             PlaceDrawPoint();
                             break;
+                        case Silk.NET.Input.Key.V:
+                            if (!IsPlacingPoint)
+                            {
+                                FocusArea.Left = PreviousFocusArea.Left;
+                                FocusArea.Right = PreviousFocusArea.Right;
+                                FocusArea.Top = PreviousFocusArea.Top;
+                                FocusArea.Bottom = PreviousFocusArea.Bottom;
+
+                                IsPlacingPoint = true;
+                                HasAreaFocused = true;
+
+                                SelectedFocusArea.Left = FocusArea.Left;
+                                SelectedFocusArea.Top = FocusArea.Top;
+                                SelectedFocusArea.Right = FocusArea.Right;
+                                SelectedFocusArea.Bottom = FocusArea.Bottom;
+
+                                RedoCurrentPath();
+                            }
+                            break;
                         case Silk.NET.Input.Key.X:
                             DrawPathPoints.Clear();
                             IsPlacingPoint = false;
@@ -221,6 +269,11 @@ namespace KeyPaint
                         case Silk.NET.Input.Key.Z:
                             if (IsPlacingPoint)
                             {
+                                if (keyboard.IsKeyPressed(Silk.NET.Input.Key.V))
+                                {
+                                    // TODO: implement undo on focus area
+                                }
+
                                 IsPlacingPoint = false;
                                 HasAreaFocused = false;
                                 ResetFocusArea();
@@ -244,24 +297,48 @@ namespace KeyPaint
                             RedoCurrentPath();
                             break;
                         case Silk.NET.Input.Key.Left:
+                            if (IsPlacingPoint && keyboard.IsKeyPressed(Silk.NET.Input.Key.V))
+                            {
+                                ConfirmShiftArea();
+                                break;
+                            }
+
                             if (!IsPlacingPoint) break;
 
                             if (FocusedDirection == Silk.NET.Input.Key.Left)
                                 CalculateSelection();
                             break;
                         case Silk.NET.Input.Key.Right:
+                            if (IsPlacingPoint && keyboard.IsKeyPressed(Silk.NET.Input.Key.V))
+                            {
+                                ConfirmShiftArea();
+                                break;
+                            }
+
                             if (!IsPlacingPoint) break;
 
                             if (FocusedDirection == Silk.NET.Input.Key.Right)
                                 CalculateSelection();
                             break;
                         case Silk.NET.Input.Key.Up:
+                            if (IsPlacingPoint && keyboard.IsKeyPressed(Silk.NET.Input.Key.V))
+                            {
+                                ConfirmShiftArea();
+                                break;
+                            }
+
                             if (!IsPlacingPoint) break;
 
                             if (FocusedDirection == Silk.NET.Input.Key.Up)
                                 CalculateSelection();
                             break;
                         case Silk.NET.Input.Key.Down:
+                            if (IsPlacingPoint && keyboard.IsKeyPressed(Silk.NET.Input.Key.V))
+                            {
+                                ConfirmShiftArea();
+                                break;
+                            }
+
                             if (!IsPlacingPoint) break;
 
                             if (FocusedDirection == Silk.NET.Input.Key.Down)
@@ -329,6 +406,44 @@ namespace KeyPaint
             }
         }
 
+        static void ShiftFocusArea(Silk.NET.Input.Key direction)
+        {
+            float Width = SelectedFocusArea.Right - SelectedFocusArea.Left;
+            float Height = SelectedFocusArea.Bottom - SelectedFocusArea.Top;
+
+            switch (direction)
+            {
+                case Silk.NET.Input.Key.Left:
+                    if (SelectedFocusArea.Left == 0) break;
+                    SelectedFocusArea.Left -= Width;
+                    SelectedFocusArea.Right -= Width;
+                    break;
+                case Silk.NET.Input.Key.Right:
+                    if (SelectedFocusArea.Left + Width == WindowWidth) break;
+                    SelectedFocusArea.Left += Width;
+                    SelectedFocusArea.Right += Width;
+                    break;
+                case Silk.NET.Input.Key.Up:
+                    if (SelectedFocusArea.Top == 0) break;
+                    SelectedFocusArea.Top -= Height;
+                    SelectedFocusArea.Bottom -= Height;
+                    break;
+                case Silk.NET.Input.Key.Down:
+                    if (SelectedFocusArea.Top + Height == WindowHeight) break;
+                    SelectedFocusArea.Top += Height;
+                    SelectedFocusArea.Bottom += Height;
+                    break;
+            }
+        }
+
+        static void ConfirmShiftArea()
+        {
+            FocusArea.Left = SelectedFocusArea.Left;
+            FocusArea.Right = SelectedFocusArea.Right;
+            FocusArea.Top = SelectedFocusArea.Top;
+            FocusArea.Bottom = SelectedFocusArea.Bottom;
+        }
+
         static void CalculateFocusedArea()
         {
             float Width = FocusArea.Right - FocusArea.Left;
@@ -388,6 +503,11 @@ namespace KeyPaint
                 FocusArea.MidX,
                 FocusArea.MidY
             ));
+
+            PreviousFocusArea.Left = FocusArea.Left;
+            PreviousFocusArea.Right = FocusArea.Right;
+            PreviousFocusArea.Top = FocusArea.Top;
+            PreviousFocusArea.Bottom = FocusArea.Bottom;
 
             RedoCurrentPath();
             ResetFocusArea();
@@ -506,7 +626,7 @@ namespace KeyPaint
             canvas.DrawRoundRect(UIPanelArea, PaintsLibrary.UIPanel);
 
             PaintsLibrary.UIPanelOutline.Color = DrawPathPoints.Count > 0 ? SKColors.Black : SKColors.LightGray;
-            PaintsLibrary.UIPanelOutline.StrokeWidth = DrawPathPoints.Count > 0 ? 2 : 3;
+            PaintsLibrary.UIPanelOutline.StrokeWidth = DrawPathPoints.Count > 0 ? 3 : 2;
 
             canvas.DrawRoundRect(UIPanelArea, PaintsLibrary.UIPanelOutline);
 

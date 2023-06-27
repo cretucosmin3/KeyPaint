@@ -46,7 +46,7 @@ namespace KeyPaint
         #region User Interface
         public static readonly SKPaint UIPanel = new()
         {
-            Color = new(225, 225, 225),
+            Color = new(240, 240, 240),
             Style = SKPaintStyle.Fill,
             IsAntialias = true,
             StrokeWidth = 2
