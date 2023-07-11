@@ -17,6 +17,10 @@ KeyPaint is a desktop drawing application enabling anyone to draw using only a k
 
 <br><br>
 
+<img width="65%" src="./github/cube-demo.gif">
+
+<br><br>
+
 ## Controls guide
 <img width="100%" src="./github/controls.png">
 <br><br><br>

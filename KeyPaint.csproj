@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <OutputType>WinExe</OutputType>
+        <OutputType>Exe</OutputType>
         <TargetFramework>net6.0</TargetFramework>
         <ApplicationIcon>assets/icon64.ico</ApplicationIcon>
         <RootNamespace>KeyPaint</RootNamespace>
