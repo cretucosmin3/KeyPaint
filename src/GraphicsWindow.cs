@@ -69,6 +69,11 @@ namespace KeyPaint
 
         private void Load()
         {
+            // Console.WriteLine($"Window Size: {window.Monitor.Bounds.Size}");
+            // window.Size = window.Monitor.Bounds.Size;
+            // window.Size = (Vector2D<int>)window.VideoMode.Resolution;
+            // window.WindowState = WindowState.Fullscreen;
+
             _Input = window.CreateInput();
 
             window.Center();
