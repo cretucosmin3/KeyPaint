@@ -4,7 +4,6 @@ namespace KeyPaint
 {
     static class PaintsLibrary
     {
-
         #region Drawing
         public static readonly SKPaint DrawPaint = new()
         {

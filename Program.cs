@@ -14,9 +14,10 @@ namespace KeyPaint
         public static extern int FreeConsole();
 
         private static GraphicsWindow Window = default!;
+        private static DrawEngine DrawEngine = new();
 
-        const float WindowWidth = 1000;
-        const float WindowHeight = 700;
+        const float WindowWidth = 1200;
+        const float WindowHeight = 850;
 
         // Drawing
         static SKRect FocusArea = new(0, 0, WindowWidth, WindowHeight);
@@ -75,6 +76,9 @@ namespace KeyPaint
 
             foreach (var keyboard in Window.Input.Keyboards)
             {
+                // keyboard.KeyDown += (_, key, _) => DrawEngine.KeyMapper.HandleKeyDown(key);
+                // keyboard.KeyUp += (_, key, _) => DrawEngine.KeyMapper.HandleKeyUp(key);
+
                 keyboard.KeyDown += (_, key, _) =>
                 {
                     switch (key)
@@ -358,8 +362,8 @@ namespace KeyPaint
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
                 Console.WriteLine("Running on Windows");
-                Console.WriteLine("Detaching the console");
-                _ = FreeConsole();
+                // Console.WriteLine("Detaching the console");
+                // _ = FreeConsole();
             }
         }
 
