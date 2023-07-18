@@ -87,25 +87,21 @@ public class DrawEngine
         KeyMapper.OnHotkeyDown(new Key[] { Key.V, Key.Down }).Perform(() => { });
         KeyMapper.OnHotkeyDown(new Key[] { Key.V, Key.Up }).Perform(() => { });
 
-        KeyMapper.OnHotkeyUp(new Key[] { Key.V, Key.Left })
-            .Perform(
-                () => SelectedFocusArea = AreaHelper.ShiftFocusArea(SelectedFocusArea, FocusArea, -1f, 0)
-            );
+        KeyMapper.OnHotkeyUp(new Key[] { Key.V, Key.Left }).Perform(
+            () => SelectedFocusArea = AreaHelper.ShiftFocusArea(SelectedFocusArea, FocusArea, -1f, 0)
+        );
 
-        KeyMapper.OnHotkeyUp(new Key[] { Key.V, Key.Right })
-            .Perform(
-                () => SelectedFocusArea = AreaHelper.ShiftFocusArea(SelectedFocusArea, FocusArea, 1f, 0)
-            );
+        KeyMapper.OnHotkeyUp(new Key[] { Key.V, Key.Right }).Perform(
+            () => SelectedFocusArea = AreaHelper.ShiftFocusArea(SelectedFocusArea, FocusArea, 1f, 0)
+        );
 
-        KeyMapper.OnHotkeyUp(new Key[] { Key.V, Key.Down })
-            .Perform(
-                () => SelectedFocusArea = AreaHelper.ShiftFocusArea(SelectedFocusArea, FocusArea, 0, -1f)
-            );
+        KeyMapper.OnHotkeyUp(new Key[] { Key.V, Key.Down }).Perform(
+            () => SelectedFocusArea = AreaHelper.ShiftFocusArea(SelectedFocusArea, FocusArea, 0, -1f)
+        );
 
-        KeyMapper.OnHotkeyUp(new Key[] { Key.V, Key.Up })
-            .Perform(
-                () => SelectedFocusArea = AreaHelper.ShiftFocusArea(SelectedFocusArea, FocusArea, 0, 1f)
-            );
+        KeyMapper.OnHotkeyUp(new Key[] { Key.V, Key.Up }).Perform(
+            () => SelectedFocusArea = AreaHelper.ShiftFocusArea(SelectedFocusArea, FocusArea, 0, 1f)
+        );
 
         // Shift selection by half
         KeyMapper.OnHotkeyDown(new Key[] { Key.ControlLeft, Key.V, Key.Left }).Perform(() => { });
