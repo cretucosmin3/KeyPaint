@@ -11,14 +11,12 @@ public class DrawEngine
     public readonly KeyMapper KeyMapper = new();
     public Commands KeyCommands = new();
 
-    const float WindowWidth = 1200;
-    const float WindowHeight = 850;
-
     // Drawing
-    SKRect FocusArea = new(0, 0, WindowWidth, WindowHeight);
-    SKRect PreviousFocusArea = new(0, 0, WindowWidth, WindowHeight);
-    SKRect SelectedFocusArea = new(0, 0, WindowWidth, WindowHeight);
+    SKRect FocusArea = default!;
+    SKRect PreviousFocusArea = default!;
+    SKRect SelectedFocusArea = default!;
     SKPoint SelectedFocusPoint = new(0, 0);
+    SKRect DrawingArea = new(0, 0, 2, 2);
 
     // UI
     readonly SKRoundRect UIPanelArea = new(new(6, 6, 66, 66), 4);
@@ -28,23 +26,40 @@ public class DrawEngine
     readonly List<SKPoint> DrawPathPoints = new();
     readonly SKPath CurrentPath = new();
 
-    SKPathEffect FuzzyEffect = null!;
-    SKPathEffect RoundEffect = null!;
-    float Roundness = 0;
-    float Fuzzyness = 0;
-
     bool IsPlacingPoint = false;
     bool HasAreaFocused = false;
-    bool SelectingRoundnessAndFuzzyness = false;
-    bool IsSelectingThinkness = false;
-    Silk.NET.Input.Key FocusedDirection;
 
-    readonly SKBitmap DrawingBitmap = new((int)WindowWidth, (int)WindowHeight, true);
-    SKCanvas BitmapCanvas = null!;
+    private SKBitmap DrawingBitmap = default!;
+    SKCanvas BitmapCanvas = default!;
 
     public DrawEngine()
     {
         AssignKeys();
+    }
+
+    public void SetCanvasSize(int width, int height)
+    {
+        DrawingArea = new SKRect(0, 0, width, height);
+        ResetDrawing();
+    }
+
+    private void ResetDrawing()
+    {
+        BitmapCanvas?.Dispose();
+        DrawingBitmap?.Dispose();
+
+        // Reset areas
+        FocusArea = new(DrawingArea.Left, DrawingArea.Top, DrawingArea.Right, DrawingArea.Bottom);
+        PreviousFocusArea = new(DrawingArea.Left, DrawingArea.Top, DrawingArea.Right, DrawingArea.Bottom);
+        SelectedFocusArea = new(DrawingArea.Left, DrawingArea.Top, DrawingArea.Right, DrawingArea.Bottom);
+
+        // Reset point position
+        SelectedFocusPoint.X = -1;
+        SelectedFocusPoint.Y = -1;
+
+        DrawingBitmap = new((int)DrawingArea.Width, (int)DrawingArea.Height, true);
+        BitmapCanvas = new(DrawingBitmap);
+        BitmapCanvas.Clear(SKColors.White);
     }
 
     private void AssignKeys()
@@ -64,7 +79,7 @@ public class DrawEngine
         KeyMapper.OnKeyUp(Key.Up).Perform(() => OnDirectionReleased(Direction.Up));
 
         KeyMapper.OnKeyDown(Key.C).Perform(() => { });
-        KeyMapper.OnKeyUp(Key.Space).Perform(() => { });
+        KeyMapper.OnKeyUp(Key.Space).Perform(ConfirmCurrentPath);
         KeyMapper.OnKeyUp(Key.Tab).Perform(() => DisplayPreview = !DisplayPreview);
 
         KeyMapper.OnHotkeyDown(KeyCommands.Export_Image).Perform(SaveImageToFile);
@@ -88,19 +103,19 @@ public class DrawEngine
         KeyMapper.OnHotkeyDown(new Key[] { Key.V, Key.Up }).Perform(() => { });
 
         KeyMapper.OnHotkeyUp(new Key[] { Key.V, Key.Left }).Perform(
-            () => SelectedFocusArea = AreaHelper.ShiftFocusArea(SelectedFocusArea, FocusArea, -1f, 0)
+            () => SelectedFocusArea = AreaHelper.ShiftArea(SelectedFocusArea, DrawingArea, -1f, 0)
         );
 
         KeyMapper.OnHotkeyUp(new Key[] { Key.V, Key.Right }).Perform(
-            () => SelectedFocusArea = AreaHelper.ShiftFocusArea(SelectedFocusArea, FocusArea, 1f, 0)
+            () => SelectedFocusArea = AreaHelper.ShiftArea(SelectedFocusArea, DrawingArea, 1f, 0)
         );
 
         KeyMapper.OnHotkeyUp(new Key[] { Key.V, Key.Down }).Perform(
-            () => SelectedFocusArea = AreaHelper.ShiftFocusArea(SelectedFocusArea, FocusArea, 0, -1f)
+            () => SelectedFocusArea = AreaHelper.ShiftArea(SelectedFocusArea, FocusArea, 0, -1f)
         );
 
         KeyMapper.OnHotkeyUp(new Key[] { Key.V, Key.Up }).Perform(
-            () => SelectedFocusArea = AreaHelper.ShiftFocusArea(SelectedFocusArea, FocusArea, 0, 1f)
+            () => SelectedFocusArea = AreaHelper.ShiftArea(SelectedFocusArea, FocusArea, 0, 1f)
         );
 
         // Shift selection by half
@@ -117,37 +132,7 @@ public class DrawEngine
         IsPlacingPoint = true;
         HasAreaFocused = true;
 
-        float Width = FocusArea.Right - FocusArea.Left;
-        float Height = FocusArea.Bottom - FocusArea.Top;
-
-        switch (FocusedDirection)
-        {
-            case Silk.NET.Input.Key.Left:
-                SelectedFocusArea.Left = FocusArea.Left;
-                SelectedFocusArea.Top = FocusArea.Top;
-                SelectedFocusArea.Right = FocusArea.Left + (Width / 2f);
-                SelectedFocusArea.Bottom = FocusArea.Bottom;
-                break;
-            case Silk.NET.Input.Key.Right:
-                SelectedFocusArea.Left = FocusArea.Left + (Width / 2f);
-                SelectedFocusArea.Top = FocusArea.Top;
-                SelectedFocusArea.Right = FocusArea.Right;
-                SelectedFocusArea.Bottom = FocusArea.Bottom;
-                break;
-            case Silk.NET.Input.Key.Up:
-                SelectedFocusArea.Left = FocusArea.Left;
-                SelectedFocusArea.Top = FocusArea.Top;
-                SelectedFocusArea.Right = FocusArea.Right;
-                SelectedFocusArea.Bottom = FocusArea.Top + (Height / 2f);
-                break;
-            case Silk.NET.Input.Key.Down:
-                SelectedFocusArea.Left = FocusArea.Left;
-                SelectedFocusArea.Top = FocusArea.Top + (Height / 2f);
-                SelectedFocusArea.Right = FocusArea.Right;
-                SelectedFocusArea.Bottom = FocusArea.Bottom;
-                break;
-        }
-
+        SelectedFocusArea = AreaHelper.TrimAreaToDirection(FocusArea, direction);
         RedoCurrentPath();
     }
 
@@ -180,38 +165,17 @@ public class DrawEngine
 
     #region On Canvas Functionalities
 
-    private void CalculateFocusedArea(Direction direction)
+    private void ConfirmCurrentPath()
     {
-        float Width = FocusArea.Right - FocusArea.Left;
-        float Height = FocusArea.Bottom - FocusArea.Top;
+        if (IsPlacingPoint) return;
 
-        switch (direction)
+        if (DrawPathPoints.Count > 1)
         {
-            case Direction.Left:
-                SelectedFocusArea.Left = FocusArea.Left;
-                SelectedFocusArea.Top = FocusArea.Top;
-                SelectedFocusArea.Right = FocusArea.Left + (Width / 2f);
-                SelectedFocusArea.Bottom = FocusArea.Bottom;
-                break;
-            case Direction.Right:
-                SelectedFocusArea.Left = FocusArea.Left + (Width / 2f);
-                SelectedFocusArea.Top = FocusArea.Top;
-                SelectedFocusArea.Right = FocusArea.Right;
-                SelectedFocusArea.Bottom = FocusArea.Bottom;
-                break;
-            case Direction.Up:
-                SelectedFocusArea.Left = FocusArea.Left;
-                SelectedFocusArea.Top = FocusArea.Top;
-                SelectedFocusArea.Right = FocusArea.Right;
-                SelectedFocusArea.Bottom = FocusArea.Top + (Height / 2f);
-                break;
-            case Direction.Down:
-                SelectedFocusArea.Left = FocusArea.Left;
-                SelectedFocusArea.Top = FocusArea.Top + (Height / 2f);
-                SelectedFocusArea.Right = FocusArea.Right;
-                SelectedFocusArea.Bottom = FocusArea.Bottom;
-                break;
+            BitmapCanvas.DrawPath(CurrentPath, PaintsLibrary.DrawPaint);
         }
+
+        CurrentPath.Rewind();
+        DrawPathPoints.Clear();
     }
 
     private void RedoCurrentPath()
