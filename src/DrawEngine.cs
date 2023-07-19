@@ -18,7 +18,11 @@ public class DrawEngine
     SKRect FocusArea = default!;
     SKRect PreviousFocusArea = default!;
     SKRect SelectedFocusArea = default!;
-    SKPoint SelectedFocusPoint = new(0, 0);
+    SKPoint SelectedFocusPoint
+    {
+        get => new SKPoint(SelectedFocusArea.MidX, SelectedFocusArea.MidY);
+    }
+
     SKRect DrawingArea = new(0, 0, 2, 2);
 
     // UI
@@ -31,7 +35,7 @@ public class DrawEngine
 
     bool IsPlacingPoint
     {
-        get => DrawPathPoints.Count > 0;
+        get => SelectedFocusArea != DrawingArea;
     }
 
     bool HasAreaFocused
@@ -121,11 +125,11 @@ public class DrawEngine
         );
 
         KeyMapper.OnHotkeyDown(new Key[] { Key.V, Key.Down }).Perform(
-            () => SelectedFocusArea = AreaHelper.ShiftArea(SelectedFocusArea, FocusArea, 0, -1f)
+            () => SelectedFocusArea = AreaHelper.ShiftArea(SelectedFocusArea, FocusArea, 0, 1f)
         );
 
         KeyMapper.OnHotkeyDown(new Key[] { Key.V, Key.Up }).Perform(
-            () => SelectedFocusArea = AreaHelper.ShiftArea(SelectedFocusArea, FocusArea, 0, 1f)
+            () => SelectedFocusArea = AreaHelper.ShiftArea(SelectedFocusArea, FocusArea, 0, -1f)
         );
 
         // Shift confirmation
@@ -175,6 +179,7 @@ public class DrawEngine
     private void OnDirectionPressed(Direction direction)
     {
         SelectedFocusArea = AreaHelper.TrimAreaToDirection(FocusArea, direction);
+
         RedoCurrentPath();
     }
 
@@ -260,10 +265,6 @@ public class DrawEngine
         PreviousFocusArea = new(DrawingArea.Left, DrawingArea.Top, DrawingArea.Right, DrawingArea.Bottom);
         SelectedFocusArea = new(DrawingArea.Left, DrawingArea.Top, DrawingArea.Right, DrawingArea.Bottom);
 
-        // Reset point position
-        SelectedFocusPoint.X = -1;
-        SelectedFocusPoint.Y = -1;
-
         DrawingBitmap = new((int)DrawingArea.Width, (int)DrawingArea.Height, true);
         BitmapCanvas = new(DrawingBitmap);
         BitmapCanvas.Clear(SKColors.White);
@@ -287,9 +288,6 @@ public class DrawEngine
 
         if (DrawPathPoints.Count > 0 && IsPlacingPoint && HasAreaFocused)
         {
-            SelectedFocusPoint.X = SelectedFocusArea.MidX;
-            SelectedFocusPoint.Y = SelectedFocusArea.MidY;
-
             CurrentPath.LineTo(SelectedFocusPoint);
         }
     }
@@ -356,23 +354,16 @@ public class DrawEngine
     private void Undo()
     {
         // TODO: implement undo on focus area
+
         if (DrawPathPoints.Count == 1)
-        {
             DrawPathPoints.Clear();
-        }
 
-        if (IsPlacingPoint)
+        if (DrawPathPoints.Count > 0 && !IsPlacingPoint)
         {
-            ResetFocusArea();
-            RedoCurrentPath();
-
             DrawPathPoints.RemoveAt(DrawPathPoints.Count - 1);
-
-            // Revert to the second to last point
-            SelectedFocusPoint.X = DrawPathPoints[^1].X;
-            SelectedFocusPoint.Y = DrawPathPoints[^1].Y;
         }
 
+        ResetFocusArea();
         RedoCurrentPath();
     }
 
@@ -428,10 +419,17 @@ public class DrawEngine
             canvas.DrawPoint(DrawPathPoints[0], PaintsLibrary.DrawPaint);
         }
 
+        if (IsPlacingPoint && DrawPathPoints.Count > 0)
+        {
+            CurrentPath.LineTo(SelectedFocusPoint);
+        }
+
         if (DrawPathPoints.Count > 0)
         {
+
             canvas.DrawPath(CurrentPath, PaintsLibrary.DrawPaint);
         }
+
 
         if (HasAreaSelected)
         {
@@ -441,8 +439,6 @@ public class DrawEngine
             {
                 canvas.DrawRect(SelectedFocusArea, PaintsLibrary.SelectedFocusAreaPaint);
 
-                SelectedFocusPoint.X = SelectedFocusArea.MidX;
-                SelectedFocusPoint.Y = SelectedFocusArea.MidY;
                 PaintsLibrary.FocusPointPaint.StrokeWidth = Math.Clamp(PaintsLibrary.DrawPaint.StrokeWidth + 3, 6, 100);
 
                 canvas.DrawPoint(SelectedFocusPoint, PaintsLibrary.FocusPointPaint);
