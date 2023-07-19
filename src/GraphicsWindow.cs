@@ -30,8 +30,8 @@ namespace KeyPaint
         private readonly string WindowTitle = "KeyPaint";
         private readonly int windowWidth;
         private readonly int windowHeight;
+        private bool RenderRequired;
 
-        public int RenderWaitTicks = 1;
         public IInputContext Input => _Input;
         public Action<SKCanvas> OnFrame = default!;
         public Action OnLoaded = default!;
@@ -56,6 +56,7 @@ namespace KeyPaint
             options.VSync = true;
             options.TransparentFramebuffer = false;
             options.WindowBorder = WindowBorder.Fixed;
+            options.IsEventDriven = true;
 
             GlfwWindowing.Use();
 
@@ -65,6 +66,25 @@ namespace KeyPaint
             window.Render += Render;
 
             window.Run();
+        }
+
+        private void StartWindowLoop()
+        {
+            while (!window.IsClosing)
+            {
+                window.DoEvents();
+                window.ContinueEvents();
+
+                if (RenderRequired)
+                {
+                    window.DoRender();
+                    RenderRequired = false;
+                }
+
+                Thread.Sleep(2);
+            }
+
+            window.Dispose();
         }
 
         private void Load()
@@ -81,6 +101,8 @@ namespace KeyPaint
             OnLoaded?.Invoke();
 
             LoadLogo();
+
+            StartWindowLoop();
         }
 
         private void LoadLogo()
@@ -113,12 +135,9 @@ namespace KeyPaint
             OnFrame.Invoke(Canvas);
 
             Canvas.Flush();
-
-            if (RenderWaitTicks > 0)
-                Thread.Sleep(RenderWaitTicks);
         }
 
-        private static void RenewCanvas(int width, int height)
+        private void RenewCanvas(int width, int height)
         {
             RenderTarget?.Dispose();
             Canvas?.Dispose();
@@ -130,7 +149,7 @@ namespace KeyPaint
             Canvas = Surface.Canvas;
         }
 
-        private static void SetCanvas(IWindow window)
+        private void SetCanvas(IWindow window)
         {
             grGlInterface = GRGlInterface.Create();
             grGlInterface.Validate();
@@ -145,6 +164,11 @@ namespace KeyPaint
 
                 window.DoRender();
             };
+        }
+
+        public void RequestNewFrame()
+        {
+            RenderRequired = true;
         }
     }
 }

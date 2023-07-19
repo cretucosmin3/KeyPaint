@@ -8,4 +8,6 @@ public class DrawStyle
     public SKPathEffect RoundEffect = null!;
     public float Roundness = 0;
     public float Fuzzyness = 0;
+    public bool IsFill = false;
+    public bool IsClosedPath = false;
 }

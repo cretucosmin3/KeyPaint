@@ -1,50 +1,52 @@
+using Silk.NET.Input;
+
 namespace KeyPaint;
 
-public static class Commands
+public class Commands
 {
     #region Canvas Commands
-    public const string Save_Image_To_File = "Save_Image_To_File";
+    /// <summary> Ctrl + S </summary>
+    public Key[] Export_Image = new Key[] { Key.ControlLeft, Key.S };
     #endregion
 
     #region Style Commands
 
-    // Line Width
-    public const string Line_Width_Increase = "Line_Width_Increase";
-    public const string Line_Width_Decrease = "Line_Width_Decrease";
+    public Key[] Line_Width_Increase = new Key[] { Key.S, Key.Right };
+    public Key[] Line_Width_Decrease = new Key[] { Key.S, Key.Left };
 
     // Line Roundness
-    public const string Line_Roundness_Increase = "Line_Roundness_Increase";
-    public const string Line_Roundness_Decrease = "Line_Roundness_Decrease";
+    public Key[] Line_Roundness_Increase = new Key[] { Key.D, Key.Right };
+    public Key[] Line_Roundness_Decrease = new Key[] { Key.D, Key.Left };
 
     // Line Fuzyness
-    public const string Line_Fuzyness_Increase = "Line_Fuzyness_Increase";
-    public const string Line_Fuzyness_Decrease = "Line_Fuzyness_Decrease";
+    public Key[] Line_Fuzyness_Increase = new Key[] { Key.D, Key.Up };
+    public Key[] Line_Fuzyness_Decrease = new Key[] { Key.D, Key.Down };
 
     #endregion
 
     #region Drawing Commands
-    public const string Clear_All = "Clear_All";
-    public const string Undo_Point = "Undo_Point";
-    public const string Confirm_Draw_Point = "Confirm_Draw_Point";
-    public const string Confirm_Current_Path = "Confirm_Current_Path";
+    public Key Clear_All = Key.Q;
+    public Key Undo_Point = Key.Z;
+    public Key Confirm_Draw_Point = Key.C;
+    public Key Confirm_Current_Path = Key.Space;
 
     // Moving point
-    public const string Move_Point_Left = "Move_Point_Left";
-    public const string Move_Point_Right = "Move_Point_Right";
-    public const string Move_Point_Down = "Move_Point_Down";
-    public const string Move_Point_Up = "Move_Point_Up";
+    public Key Move_Point_Left = Key.Left;
+    public Key Move_Point_Right = Key.Right;
+    public Key Move_Point_Down = Key.Down;
+    public Key Move_Point_Up = Key.Up;
 
     // Shift point
-    public const string Shift_Point_Left = "Shift_Point_Left";
-    public const string Shift_Point_Right = "Shift_Point_Right";
-    public const string Shift_Point_Down = "Shift_Point_Down";
-    public const string Shift_Point_Up = "Shift_Point_Up";
+    public Key[] Shift_Point_Left = new Key[] { Key.V, Key.Left };
+    public Key[] Shift_Point_Right = new Key[] { Key.V, Key.Right };
+    public Key[] Shift_Point_Down = new Key[] { Key.V, Key.Down };
+    public Key[] Shift_Point_Up = new Key[] { Key.V, Key.Up };
 
     // Shift point by half unit
-    public const string Half_Shift_Point_Left = "Shift_Point_Left";
-    public const string Half_Shift_Point_Right = "Shift_Point_Right";
-    public const string Half_Shift_Point_Down = "Shift_Point_Down";
-    public const string Half_Shift_Point_Up = "Shift_Point_Up";
+    public Key[] Shift_Point_Left_Half = new Key[] { Key.ControlLeft, Key.V, Key.Left };
+    public Key[] Shift_Point_Right_Half = new Key[] { Key.ControlLeft, Key.V, Key.Right };
+    public Key[] Shift_Point_Down_Half = new Key[] { Key.ControlLeft, Key.V, Key.Down };
+    public Key[] Shift_Point_Up_Half = new Key[] { Key.ControlLeft, Key.V, Key.Up };
 
 
     #endregion

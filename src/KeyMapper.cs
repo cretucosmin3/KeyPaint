@@ -25,6 +25,7 @@ public class KeyMapper
     private readonly Dictionary<string, KeyBind> HotkeysUp = new();
 
     public event Action<char> OnKeyType = default!;
+    public event Action OnAfterAnyEvent = default!;
 
     public void AddKeyUpRestriction(Key[] keys)
     {
@@ -117,6 +118,8 @@ public class KeyMapper
         if (!IsHotkey && hasBind)
         {
             keyDownEvent?.Method?.Invoke();
+            OnAfterAnyEvent?.Invoke();
+
             Console.WriteLine($"Key down bind: {key}");
         }
     }
@@ -130,6 +133,7 @@ public class KeyMapper
             if (HotkeysUp.ContainsKey(hotkeyIndex))
             {
                 HotkeysUp[hotkeyIndex].Method?.Invoke();
+                OnAfterAnyEvent?.Invoke();
 
                 Console.WriteLine($"Hotkey up bind: {hotkeyIndex}");
             }
@@ -154,6 +158,8 @@ public class KeyMapper
             if (!isUpRestricted)
             {
                 keyUpEvent?.Method?.Invoke();
+                OnAfterAnyEvent?.Invoke();
+
                 Console.WriteLine($"Key up bind: {key}");
             }
             else
@@ -184,6 +190,7 @@ public class KeyMapper
             if (HotkeysDown.ContainsKey(hotkeyIndex))
             {
                 HotkeysDown[hotkeyIndex].Method?.Invoke();
+                OnAfterAnyEvent?.Invoke();
 
                 Console.WriteLine($"Hotkey down bind: {hotkeyIndex}");
                 return true;
