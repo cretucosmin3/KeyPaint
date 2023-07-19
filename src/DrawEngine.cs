@@ -54,11 +54,7 @@ public class DrawEngine
     public DrawEngine()
     {
         AssignKeys();
-
-        UILineExample.MoveTo(18, 52);
-        UILineExample.LineTo(52, 20);
-        UILineExample.LineTo(52, 52);
-        UILineExample.LineTo(18, 20);
+        RedoPreviewPath();
     }
 
     public void SetCanvasSize(int width, int height)
@@ -443,7 +439,6 @@ public class DrawEngine
             canvas.DrawPath(CurrentPath, PaintsLibrary.DrawPaint);
         }
 
-
         if (HasAreaSelected)
         {
             canvas.DrawRect(FocusArea, PaintsLibrary.FocusAreaPaint);
@@ -489,6 +484,7 @@ public class DrawEngine
 
         canvas.DrawRoundRect(UIPanelArea, PaintsLibrary.UIPanelOutline);
 
+        RedoPreviewPath();
         canvas.DrawPath(UILineExample, PaintsLibrary.DrawPaint);
 
         PaintsLibrary.DrawPaint.Color = previousColor;
@@ -498,6 +494,18 @@ public class DrawEngine
             UIPanelArea.Offset(0 - (DrawingArea.Width - 72), 0);
             UILineExample.Offset(0 - (DrawingArea.Width - 72), 0);
         }
+    }
+
+    void RedoPreviewPath()
+    {
+        UILineExample.Rewind();
+        UILineExample.MoveTo(18, 52);
+        UILineExample.LineTo(52, 20);
+        UILineExample.LineTo(52, 52);
+        UILineExample.LineTo(18, 20);
+
+        if (DrawStyle.IsClosedPath)
+            UILineExample.Close();
     }
 
     #endregion

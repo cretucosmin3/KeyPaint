@@ -16,8 +16,8 @@ namespace KeyPaint
         private static GraphicsWindow Window = default!;
         private static readonly DrawEngine DrawEngine = new();
 
-        const int WindowWidth = 900;
-        const int WindowHeight = 700;
+        const int WindowWidth = 1200;
+        const int WindowHeight = 900;
 
         static void Main()
         {
