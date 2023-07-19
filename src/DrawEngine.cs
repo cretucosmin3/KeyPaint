@@ -87,6 +87,9 @@ public class DrawEngine
         // Fill
         KeyMapper.OnKeyUp(Key.F).Perform(ToggleFill);
 
+        // Closed path
+        KeyMapper.OnKeyUp(Key.G).Perform(ToggleClosedPath);
+
         // Select colors
         KeyMapper.OnKeyUp(Key.Number1).Perform(() => PaintsLibrary.DrawPaint.Color = new(235, 235, 235));
         KeyMapper.OnKeyUp(Key.Number2).Perform(() => PaintsLibrary.DrawPaint.Color = new(175, 175, 175));
@@ -238,8 +241,15 @@ public class DrawEngine
 
     private void ToggleFill()
     {
-        bool isStroke = PaintsLibrary.DrawPaint.Style == SKPaintStyle.Stroke;
-        PaintsLibrary.DrawPaint.Style = isStroke ? SKPaintStyle.Fill : SKPaintStyle.Stroke;
+        DrawStyle.IsFill = !DrawStyle.IsFill;
+        PaintsLibrary.DrawPaint.Style = DrawStyle.IsFill ? SKPaintStyle.Fill : SKPaintStyle.Stroke;
+    }
+
+    private void ToggleClosedPath()
+    {
+        DrawStyle.IsClosedPath = !DrawStyle.IsClosedPath;
+        RedoCurrentPath();
+
     }
 
     private void ConfirmCurrentPath()
@@ -290,6 +300,9 @@ public class DrawEngine
         {
             CurrentPath.LineTo(SelectedFocusPoint);
         }
+
+        if (DrawStyle.IsClosedPath)
+            CurrentPath.Close();
     }
 
     private void ComposePathEffects()
@@ -419,7 +432,7 @@ public class DrawEngine
             canvas.DrawPoint(DrawPathPoints[0], PaintsLibrary.DrawPaint);
         }
 
-        if (IsPlacingPoint && DrawPathPoints.Count > 0)
+        if (!DrawStyle.IsClosedPath && IsPlacingPoint && DrawPathPoints.Count > 0)
         {
             CurrentPath.LineTo(SelectedFocusPoint);
         }
