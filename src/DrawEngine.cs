@@ -462,8 +462,6 @@ public class DrawEngine
 
         if (HasAreaSelected)
         {
-            canvas.DrawRect(FocusArea, PaintsLibrary.FocusAreaPaint);
-
             if (HasAreaSelected)
             {
                 canvas.DrawRect(SelectedFocusArea, PaintsLibrary.SelectedFocusAreaPaint);
@@ -478,6 +476,10 @@ public class DrawEngine
                 // Draw vertical guide line
                 canvas.DrawLine(SelectedFocusPoint.X, 0, SelectedFocusPoint.X, DrawingArea.Height, PaintsLibrary.CrossPointPaint);
             }
+
+            FocusArea.Inflate(-2, -2);
+            canvas.DrawRect(FocusArea, PaintsLibrary.FocusAreaPaint);
+            FocusArea.Inflate(2, 2);
         }
 
         if (DisplayPreview)
