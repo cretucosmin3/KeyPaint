@@ -147,11 +147,11 @@ public class DrawEngine
         );
 
         KeyMapper.OnHotkeyDown(new Key[] { Key.ControlLeft, Key.V, Key.Down }).Perform(
-            () => SelectedFocusArea = AreaHelper.ShiftArea(SelectedFocusArea, DrawingArea, 0, -0.5f)
+            () => SelectedFocusArea = AreaHelper.ShiftArea(SelectedFocusArea, DrawingArea, 0, 0.5f)
         );
 
         KeyMapper.OnHotkeyDown(new Key[] { Key.ControlLeft, Key.V, Key.Up }).Perform(
-            () => SelectedFocusArea = AreaHelper.ShiftArea(SelectedFocusArea, DrawingArea, 0, 0.5f)
+            () => SelectedFocusArea = AreaHelper.ShiftArea(SelectedFocusArea, DrawingArea, 0, -0.5f)
         );
 
         // Shift by half confirmation
@@ -159,6 +159,27 @@ public class DrawEngine
         KeyMapper.OnHotkeyUp(new Key[] { Key.ControlLeft, Key.V, Key.Right }).Perform(ConfirmShiftArea);
         KeyMapper.OnHotkeyUp(new Key[] { Key.ControlLeft, Key.V, Key.Down }).Perform(ConfirmShiftArea);
         KeyMapper.OnHotkeyUp(new Key[] { Key.ControlLeft, Key.V, Key.Up }).Perform(ConfirmShiftArea);
+
+        // // Shift selection to opposite side
+        KeyMapper.OnKeyDown(Key.W).Perform(
+            () =>
+            {
+                FocusArea = AreaHelper.ShiftAreaToOpposite(FocusArea, DrawingArea, true);
+                SelectedFocusArea = AreaHelper.ShiftAreaToOpposite(SelectedFocusArea, DrawingArea, true);
+            }
+        );
+
+        KeyMapper.OnKeyDown(Key.E).Perform(
+            () =>
+            {
+                FocusArea = AreaHelper.ShiftAreaToOpposite(FocusArea, DrawingArea, false);
+                SelectedFocusArea = AreaHelper.ShiftAreaToOpposite(SelectedFocusArea, DrawingArea, false);
+            }
+        );
+
+        // Shift confirmation to opposite side
+        KeyMapper.OnKeyUp(Key.W).Perform(ConfirmShiftArea);
+        KeyMapper.OnKeyUp(Key.E).Perform(ConfirmShiftArea);
         #endregion
 
         #region Misc Binds

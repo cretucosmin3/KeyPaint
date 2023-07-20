@@ -23,6 +23,29 @@ public static class AreaHelper
         return rect;
     }
 
+    public static SKRect ShiftAreaToOpposite(SKRect rect, SKRect bounds, bool horizontalShift)
+    {
+        float Width = rect.Right - rect.Left;
+        float Height = rect.Bottom - rect.Top;
+
+        if (horizontalShift)
+        {
+            return new(
+                bounds.Right - rect.Left - Width,
+                rect.Top,
+                bounds.Right - rect.Left,
+                rect.Bottom
+            );
+        }
+
+        return new(
+            rect.Left,
+            bounds.Bottom - rect.Top - Height,
+            rect.Right,
+            bounds.Bottom - rect.Top
+        );
+    }
+
     public static SKRect TrimAreaToDirection(SKRect focusArea, Direction direction)
     {
         SKRect result = new();
