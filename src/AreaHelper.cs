@@ -23,23 +23,6 @@ public static class AreaHelper
         return rect;
     }
 
-    public static SKRect ShiftAreaByHalf(SKRect rect, SKRect bounds, float shiftX, float shiftY)
-    {
-        float Width = (rect.Right - rect.Left) / 2f;
-        float Height = (rect.Bottom - rect.Top) / 2f;
-
-        SKRect result = new(
-            rect.Left + (Width * shiftX),
-            rect.Top + (Height * shiftY),
-            rect.Right + (Width * shiftX),
-            rect.Bottom + (Height * shiftY)
-        );
-
-        if (bounds.Contains(result)) return result;
-
-        return rect;
-    }
-
     public static SKRect TrimAreaToDirection(SKRect focusArea, Direction direction)
     {
         SKRect result = new();
