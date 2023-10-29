@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <OutputType>Exe</OutputType>
-        <TargetFramework>net6.0</TargetFramework>
+        <TargetFramework>net7.0</TargetFramework>
         <ApplicationIcon>assets/icon64.ico</ApplicationIcon>
         <RootNamespace>KeyPaint</RootNamespace>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -34,8 +34,10 @@
     <Target Name="CopyAssets" AfterTargets="AfterBuild">
         <ItemGroup>
             <_AssetFiles Include="$(MSBuildProjectDirectory)\assets\**" />
+            <_GlfwFiles Include="$(MSBuildProjectDirectory)\glfw\**" />
         </ItemGroup>
         <Copy SourceFiles="@(_AssetFiles)" DestinationFolder="$(OutDir)assets\%(RecursiveDir)" />
+        <Copy SourceFiles="@(_GlfwFiles)" DestinationFolder="$(OutDir)\%(RecursiveDir)" />
     </Target>
 
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'" />
